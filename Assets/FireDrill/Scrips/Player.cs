@@ -1,4 +1,6 @@
-﻿using Unity.VisualScripting;
+﻿using System;
+using Unity.VisualScripting;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
@@ -10,6 +12,9 @@ public class Player : MonoBehaviour
     InputAction moveAction;
     InputAction jumpAction;
     InputAction runAction;
+    InputAction eventAction;
+    InputAction putAction;
+    InputAction actionAction;
     CharacterController cc;
     Animator anim;
     bool bRun;
@@ -21,9 +26,32 @@ public class Player : MonoBehaviour
         moveAction = input.actions["Move"];
         jumpAction = input.actions["Jump"];
         runAction = input.actions["Run"];
+        eventAction = input.actions["Event"];
+        putAction = input.actions["Put"];
+        actionAction = input.actions["Action"];
+
+        actionAction.performed += c =>
+        {
+            if (grabObject)
+            {
+                grabObject.StartPowder();
+            }
+        };
+
+        actionAction.canceled += c =>
+        {
+            if (grabObject)
+            {
+                grabObject.StopPowder();
+            }
+        };
+
+        putAction.performed += c => Put();
+
+        eventAction.performed += OnMyEvent;
 
         bRun = false;
-        
+
         runAction.performed += (context) =>
         {
             bRun = true;
@@ -52,9 +80,63 @@ public class Player : MonoBehaviour
         Cursor.visible = false;
     }
 
+    private void OnMyEvent(CallbackContext context)
+    {
+        print("OnMyEvent");
+        // 앞에 있는 충돌체를 검사하고 싶다.
+        Ray ray = new Ray(Camera.main.transform.position,
+                            Camera.main.transform.forward);
+
+        //bool bHit = Physics.Raycast(ray, out RaycastHit hitInfo, 10);
+        bool bHit = Physics.SphereCast(ray, 1, out RaycastHit hitInfo, 15);
+        if (bHit)
+        {
+            // tag가 Door라면
+            if (hitInfo.transform.tag.Equals("Door"))
+            {
+                // Animator컴포넌트를 가져와서 문을 열고싶다.
+                var anim = hitInfo.transform.GetComponentInChildren<Animator>();
+                if (anim)
+                {
+                    anim.Play("Opening");
+                }
+            }
+            // 그렇지 않고 소화기라면
+            else if (hitInfo.transform.tag.Equals("FireExtinguisher"))
+            {
+                // 소화기를 잡고싶다.
+                print("잡았다.");
+                Grab(ref hitInfo);
+            }
+        }
+    }
+
+    FireExtinguisher grabObject;
+    public Transform fireExtTarget;
+
+    void Grab(ref RaycastHit hitInfo)
+    {
+        hitInfo.rigidbody.isKinematic = true;
+        hitInfo.transform.parent = fireExtTarget;
+        hitInfo.transform.localPosition = Vector3.zero;
+        hitInfo.transform.localRotation = Quaternion.identity;
+
+        grabObject = hitInfo.transform.GetComponent<FireExtinguisher>();
+    }
+
+    void Put()
+    {
+        if (grabObject)
+        {
+            grabObject.GetComponent<Rigidbody>().isKinematic = false;
+            grabObject.transform.parent = null;
+            grabObject = null;
+        }
+    }
+
     void Start()
     {
-        
+
     }
 
     public float gravity = -9.81f;

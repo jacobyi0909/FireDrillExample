@@ -28,9 +28,9 @@ public class CameraRotation : MonoBehaviour
         rx = Mathf.Clamp(rx, -60f, 60f);
 
         // 카메라 회전 보간처리
-        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(rx, ry, 0), Time.deltaTime * 15f);
+        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.Euler(rx, 0, 0), 1);
         
         // 플레이어의 몸 회전 보간처리
-        player.rotation = Quaternion.Lerp(player.rotation, Quaternion.Euler(0, ry, 0), Time.deltaTime * 15f);
+        player.rotation = Quaternion.Lerp(player.rotation, Quaternion.Euler(0, ry, 0), 1);
     }
 }
