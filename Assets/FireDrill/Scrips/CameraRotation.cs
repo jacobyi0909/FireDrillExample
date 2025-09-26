@@ -5,8 +5,10 @@ public class CameraRotation : MonoBehaviour
 {
     // 부모 게임오브젝트에 붙어있는 PlayerInput 컴포넌트를 가져오고싶다.
     InputAction mouseAction;
+    public Transform player;
     void Awake()
     {
+        //player = GetComponentInParent<Transform>();
         var input = GetComponentInParent<PlayerInput>();
         mouseAction = input.actions["Mouse"];
     }
@@ -25,6 +27,10 @@ public class CameraRotation : MonoBehaviour
 
         rx = Mathf.Clamp(rx, -60f, 60f);
 
-        transform.eulerAngles = new Vector3(rx, ry, 0);
+        // 카메라 회전 보간처리
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(rx, ry, 0), Time.deltaTime * 15f);
+        
+        // 플레이어의 몸 회전 보간처리
+        player.rotation = Quaternion.Lerp(player.rotation, Quaternion.Euler(0, ry, 0), Time.deltaTime * 15f);
     }
 }

@@ -9,8 +9,10 @@ public class Player : MonoBehaviour
     PlayerInput input = null;
     InputAction moveAction;
     InputAction jumpAction;
+    InputAction runAction;
     CharacterController cc;
     Animator anim;
+    bool bRun;
     private void Awake()
     {
         anim = GetComponentInChildren<Animator>();
@@ -18,6 +20,18 @@ public class Player : MonoBehaviour
         input = GetComponent<PlayerInput>();
         moveAction = input.actions["Move"];
         jumpAction = input.actions["Jump"];
+        runAction = input.actions["Run"];
+
+        bRun = false;
+        
+        runAction.performed += (context) =>
+        {
+            bRun = true;
+        };
+        runAction.canceled += (context) =>
+        {
+            bRun = false;
+        };
 
         jumpAction.performed += (context) =>
         {
@@ -29,6 +43,8 @@ public class Player : MonoBehaviour
                 jumpCount++;
             }
         };
+
+
 
         cc = GetComponent<CharacterController>();
 
@@ -47,7 +63,9 @@ public class Player : MonoBehaviour
     int jumpCount = 0;
     public int maxJumpCount = 1;
 
-    public float speed = 5f;
+    float walkSpeed = 3f;
+    float runSpeed = 6f;
+    float speed;
 
     private void FixedUpdate()
     {
@@ -67,13 +85,17 @@ public class Player : MonoBehaviour
         float h = move.x;
         float v = move.y;
 
-        if (Mathf.Abs(v) > 0.1f)
+        if (bRun)
         {
-            anim.SetTrigger("Walk");
+            // 뛸때는 h, v의 크기가 2
+            anim.SetFloat("h", h * 2);
+            anim.SetFloat("v", v * 2);
         }
         else
         {
-            anim.SetTrigger("Idle");
+            // 걸을때는 h, v의 크기가 1
+            anim.SetFloat("h", h);
+            anim.SetFloat("v", v);
         }
 
         yVelocity += gravity * Time.deltaTime;
@@ -84,6 +106,12 @@ public class Player : MonoBehaviour
         dir = Camera.main.transform.TransformDirection(dir);
         dir.y = 0;
         dir.Normalize();
+
+        speed = walkSpeed;
+        if (bRun)
+        {
+            speed = runSpeed;
+        }
 
         Vector3 velocity = dir * speed;
         velocity.y = yVelocity;
