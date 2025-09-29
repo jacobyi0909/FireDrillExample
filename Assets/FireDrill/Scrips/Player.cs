@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using static UnityEngine.InputSystem.InputAction;
 
-
-public class Player : MonoBehaviour
+public partial class Player : MonoBehaviour
 {
     PlayerInput input = null;
     InputAction moveAction;
@@ -15,11 +16,63 @@ public class Player : MonoBehaviour
     InputAction eventAction;
     InputAction putAction;
     InputAction actionAction;
+    InputAction throwAction;
     CharacterController cc;
     Animator anim;
     bool bRun;
+    public GameObject ballFactory;
+    public Transform ballPoint;
+
+    float curHP;
+    public float maxHP = 10f;
+    public Slider sliderHP;
+    public Image imageDamage;
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.collider.CompareTag("FireObject"))
+        {
+            curHP -= 1;
+            sliderHP.value = curHP;
+
+            // 만약 curHP가 0이면 
+            if (curHP <= 0)
+            {
+                ResultManager.Instance.ShowSuccessUI();
+            }
+
+            if (false == bDamageEffect)
+            {
+                bDamageEffect = true;
+                StartCoroutine(IEDamage());
+            }
+        }
+    }
+    bool bDamageEffect;
+
+    IEnumerator IEDamage()
+    {
+        Color c = imageDamage.color;
+        for (float t = 0.75f; t > 0; t -= Time.deltaTime * 2)
+        {
+            c.a = t;
+            imageDamage.color = c;
+            yield return new WaitForSeconds(Time.deltaTime * 2);
+        }
+        c.a = 0;
+        imageDamage.color = c;
+        bDamageEffect = false;
+    }
+
     private void Awake()
     {
+        sliderHP.minValue = 0;
+        sliderHP.maxValue = maxHP;
+        sliderHP.value = maxHP;
+        curHP = maxHP;
+
+
+
         anim = GetComponentInChildren<Animator>();
 
         input = GetComponent<PlayerInput>();
@@ -29,6 +82,12 @@ public class Player : MonoBehaviour
         eventAction = input.actions["Event"];
         putAction = input.actions["Put"];
         actionAction = input.actions["Action"];
+        throwAction = input.actions["ThrowBall"];
+
+        throwAction.performed += c =>
+        {
+            Instantiate(ballFactory, ballPoint.position, ballPoint.rotation);
+        };
 
         actionAction.performed += c =>
         {
@@ -107,6 +166,14 @@ public class Player : MonoBehaviour
                 // 소화기를 잡고싶다.
                 print("잡았다.");
                 Grab(ref hitInfo);
+            }
+            else if (hitInfo.transform.root.tag.Equals("NPC"))
+            {
+                var npc = hitInfo.transform.GetComponent<NPC>();
+                if (npc)
+                {
+                    npc.Getup();
+                }
             }
         }
     }

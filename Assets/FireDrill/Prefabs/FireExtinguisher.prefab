@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5559024840533817343}
+  - component: {fileID: 7443995964314248410}
   - component: {fileID: 8205345876268129547}
   m_Layer: 0
   m_Name: FireExtinguisher
@@ -34,6 +35,19 @@ Transform:
   - {fileID: 2772464219316063852}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7443995964314248410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6238089618867770994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fef6620bf805564ea12546d82c0483b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ps: {fileID: 6082892786343855741}
 --- !u!54 &8205345876268129547
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -75,7 +89,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4373319327020027324, guid: 4fe43e684350d7144a3dbad24c87e8fc, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.074
+      value: 0.134
       objectReference: {fileID: 0}
     - target: {fileID: 4373319327020027324, guid: 4fe43e684350d7144a3dbad24c87e8fc, type: 3}
       propertyPath: m_LocalPosition.y
@@ -83,7 +97,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4373319327020027324, guid: 4fe43e684350d7144a3dbad24c87e8fc, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.103
+      value: 0.173
       objectReference: {fileID: 0}
     - target: {fileID: 4373319327020027324, guid: 4fe43e684350d7144a3dbad24c87e8fc, type: 3}
       propertyPath: m_LocalRotation.w
@@ -113,6 +127,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5666132546568471981, guid: 4fe43e684350d7144a3dbad24c87e8fc, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -121,6 +139,11 @@ PrefabInstance:
 --- !u!4 &2772464219316063852 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4373319327020027324, guid: 4fe43e684350d7144a3dbad24c87e8fc, type: 3}
+  m_PrefabInstance: {fileID: 1930042327442752464}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &6082892786343855741 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 5666132546568471981, guid: 4fe43e684350d7144a3dbad24c87e8fc, type: 3}
   m_PrefabInstance: {fileID: 1930042327442752464}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3061488884974931850
